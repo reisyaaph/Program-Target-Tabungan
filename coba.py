@@ -1,2 +1,1 @@
-print("eksternal best")
-print("bem u")
+print("hello world")
