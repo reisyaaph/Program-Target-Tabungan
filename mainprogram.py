@@ -1,0 +1,67 @@
+import csv
+from datetime import datetime, timedelta
+
+def main():
+    data_tabungan = baca_data_dari_csv()
+    if data_tabungan:
+        tabungan_awal = float(data_tabungan["tabungan_akhir"])
+        tabungan_akhir = tabungan_awal
+        print("Informasi Tabungan")
+        print("Total tabungan anda saat ini: {tabungan_akhir}\n")
+    else:
+        tabungan_awal = float(input("Masukkan jumlah total tabungan yang Anda miliki saat ini: "))
+        tabungan_akhir = tabungan_awal
+        print("Informasi Tabungan")
+        print("Total tabungan Anda saat ini: {tabungan_awal}\n")
+
+    while True:
+        print("Pilihan:")
+        print("1. Menabung")
+        print("2. Menarik tabungan")
+        print("3. Keluar") 
+        pilihan_awal = input("Pilih opsi (1/2/3): ")
+
+        if pilihan_awal == "1":
+            target_tambahan = float(input("Masukkan jumlah target tabungan tambahan: "))
+            jumlah_hari = int(input("Masukkan jumlah hari untuk mencapai target tambahan ini: "))
+
+            tabungan_per_hari = target_tambahan / jumlah_hari
+
+            print("\n--- Program Tabungan Harian ---")
+            print(f"Target tambahan yang ingin dicapai:", target_tambahan)
+            print(f"Jumlah hari yang ditentukan:", jumlah_hari)
+            print(f"Target tabungan per hari: {tabungan_per_hari}\n")
+        
+        elif pilihan_awal == '2':
+            jumlah_tarikan = float(input("Masukkan jumlah tabungan yang ingin Anda tarik: "))
+            
+            if jumlah_tarikan <= tabungan_akhir:
+                tabungan_akhir -= jumlah_tarikan
+                print("Anda berhasil menarik tabungan sebesar:", jumlah_tarikan)
+                print("Sisa tabungan Anda sekarang: {tabungan_akhir}\n")
+                
+                jumlah_hari = int(input("Berapa hari Anda ingin menabung untuk mencapai target ini? "))
+                tanggal_mulai = input("Masukkan tanggal mulai menabung kembali (format: YYYY-MM-DD): ")
+                
+                tanggal_mulai = datetime.strptime(tanggal_mulai, "%Y-%m-%d")
+                tabungan_per_hari = jumlah_tarikan / jumlah_hari
+
+                print("\n--- Program Tabungan Harian ---")
+                print(f"Target yang ingin dicapai:", jumlah_tarikan)
+                print(f"Jumlah hari yang ditentukan:", jumlah_hari)
+                print(f"Target tabungan per hari:", tabungan_per_hari)
+                print(f"Tabungan akan dimulai pada tanggal: {tanggal_mulai.strftime('%Y-%m-%d')}\n")
+
+            else:
+                print("Jumlah tarikan melebihi total tabungan yang dimiliki. Tidak dapat melakukan penarikan.")
+
+        elif pilihan_awal == '3':
+            break
+        
+        else:
+            print("Pilihan tidak valid. Silakan pilih opsi yang tersedia.")
+
+    print("\n--- Program Selesai ---")
+    print("Total tabungan Anda sekarang (tabungan akhir):", tabungan_akhir)
+
+main()
