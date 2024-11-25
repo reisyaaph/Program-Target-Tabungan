@@ -1,6 +1,34 @@
 import csv
 from datetime import datetime, timedelta
 
+def simpan_data_ke_csv(tabungan_akhir, aktivitas):  
+    nama_file = 'data_tabungan.csv'
+    try:
+        data = {
+            "tabungan_akhir": tabungan_akhir,
+            "aktivitas": aktivitas,
+            "tanggal_simpan": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        }
+        with open(nama_file, 'a', newline='') as file:
+            writer = csv.DictWriter(file, fieldnames=["tabungan_akhir", "aktivitas", "tanggal_simpan"])
+            if file.tell() == 0:
+                writer.writeheader()  
+            writer.writerow(data)  
+    except IOError as e:
+        print(f"Terjadi kesalahan saat menyimpan data: {e}")
+
+def baca_data_dari_csv(nama_file='data_tabungan.csv'):
+    try:
+        with open(nama_file, 'r', newline='') as file:
+            reader = csv.DictReader(file)
+            data = list(reader)
+        return data
+    except FileNotFoundError:
+        return []
+
+def format_rupiah(nilai):
+    return f"{nilai:,.0f}"
+
 def main():
     data_tabungan = baca_data_dari_csv()
     if data_tabungan:
