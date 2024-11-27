@@ -37,3 +37,29 @@ def mulai_menabung():
 
     except ValueError:
         print("Kesalahan Input: Masukkan nilai yang valid untuk target dan jumlah hari!")
+
+def menabung_harian(hari_ke):
+    global tabungan_awal, target_per_hari, menabung_aktif
+
+    while hari_ke <= jumlah_hari and menabung_aktif:
+        print(f"\nHari ke-{hari_ke}/{jumlah_hari}")
+        print(f"Saldo Tabungan Saat Ini: Rp {format_rupiah(tabungan_awal)}")
+        print(f"Target Hari Ini: Rp {format_rupiah(target_per_hari)}")
+
+        pilihan = input("Pilih aksi: [1] Menabung [2] Lewati: ")
+        if pilihan == "1":
+            tabungan_awal += target_per_hari
+            simpan_data_ke_csv(tabungan_awal, f"Menabung hari ke-{hari_ke}", hari_ke)
+            print(f"Berhasil menabung! Saldo saat ini: Rp {format_rupiah(tabungan_awal)}")
+        elif pilihan == "2":
+            simpan_data_ke_csv(tabungan_awal, f"Tidak menabung hari ke-{hari_ke}", hari_ke)
+            print(f"Hari ke-{hari_ke} dilewati.")
+        else:
+            print("Pilihan tidak valid. Coba lagi.")
+            continue
+
+        hari_ke += 1
+
+    if hari_ke > jumlah_hari:
+        menabung_aktif = False
+        print("\nAnda telah menyelesaikan target menabung! Selamat!")
