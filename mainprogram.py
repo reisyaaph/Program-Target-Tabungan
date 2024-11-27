@@ -5,67 +5,35 @@ from bacadata import simpan_data_ke_csv, baca_data_dari_csv
 def format_rupiah(nilai):
     return f"{nilai:,.0f}"
 
-def main():
-    data_tabungan = baca_data_dari_csv()
-    if data_tabungan:
-        tabungan_awal = float(data_tabungan["tabungan_akhir"])
-        tabungan_akhir = tabungan_awal
-        print("Informasi Tabungan")
-        print("Total tabungan anda saat ini: {tabungan_akhir}\n")
-    else:
-        tabungan_awal = float(input("Masukkan jumlah total tabungan yang Anda miliki saat ini: "))
-        tabungan_akhir = tabungan_awal
-        print("Informasi Tabungan")
-        print("Total tabungan Anda saat ini: {tabungan_awal}\n")
+global tabungan_awal, hari_ke, jumlah_hari, target_tabungan, target_per_hari, tanggal_mulai, berhasil_menabung, menabung_setiap_hari, tabungan_awal_sebelumnya
+data_tabungan = baca_data_dari_csv()
+tabungan_awal = float(data_tabungan[-1]['tabungan_akhir']) if data_tabungan else 0.0
+hari_ke = 1
+jumlah_hari = 0
+target_tabungan = 0
+target_per_hari = 0
+tanggal_mulai = datetime.now()
+berhasil_menabung = False
+menabung_setiap_hari = True
 
-    while True:
-        print("Pilihan:")
-        print("1. Menabung")
-        print("2. Menarik tabungan")
-        print("3. Keluar") 
-        pilihan_awal = input("Pilih opsi (1/2/3): ")
+def mulai_menabung():
+    global jumlah_hari, target_tabungan, target_per_hari, hari_ke, tabungan_awal, menabung_aktif
+    try:
+        target_tabungan = float(input("Masukkan target tabungan (Rp): ").replace('.', '').replace(',', '.'))
+        jumlah_hari = int(input("Masukkan jumlah hari: "))
 
-        if pilihan_awal == "1":
-            target_tambahan = float(input("Masukkan jumlah target tabungan tambahan: "))
-            jumlah_hari = int(input("Masukkan jumlah hari untuk mencapai target tambahan ini: "))
+        if target_tabungan <= 0 or jumlah_hari <= 0:
+            raise ValueError
 
-            tabungan_per_hari = target_tambahan / jumlah_hari
+        target_per_hari = target_tabungan / jumlah_hari
+        hari_ke = 1
+        menabung_aktif = True  # Menandai bahwa proses menabung aktif
 
-            print("\n--- Program Tabungan Harian ---")
-            print(f"Target tambahan yang ingin dicapai:", target_tambahan)
-            print(f"Jumlah hari yang ditentukan:", jumlah_hari)
-            print(f"Target tabungan per hari: {tabungan_per_hari}\n")
+        print(f"\nTarget tabungan: Rp {format_rupiah(target_tabungan)}")
+        print(f"Jumlah hari: {jumlah_hari}")
+        print(f"Target tabungan per hari: Rp {format_rupiah(target_per_hari)}\n")
         
-        elif pilihan_awal == '2':
-            jumlah_tarikan = float(input("Masukkan jumlah tabungan yang ingin Anda tarik: "))
-            
-            if jumlah_tarikan <= tabungan_akhir:
-                tabungan_akhir -= jumlah_tarikan
-                print("Anda berhasil menarik tabungan sebesar:", jumlah_tarikan)
-                print("Sisa tabungan Anda sekarang: {tabungan_akhir}\n")
-                
-                jumlah_hari = int(input("Berapa hari Anda ingin menabung untuk mencapai target ini? "))
-                tanggal_mulai = input("Masukkan tanggal mulai menabung kembali (format: YYYY-MM-DD): ")
-                
-                tanggal_mulai = datetime.strptime(tanggal_mulai, "%Y-%m-%d")
-                tabungan_per_hari = jumlah_tarikan / jumlah_hari
+        menabung_harian(hari_ke)
 
-                print("\n--- Program Tabungan Harian ---")
-                print(f"Target yang ingin dicapai:", jumlah_tarikan)
-                print(f"Jumlah hari yang ditentukan:", jumlah_hari)
-                print(f"Target tabungan per hari:", tabungan_per_hari)
-                print(f"Tabungan akan dimulai pada tanggal: {tanggal_mulai.strftime('%Y-%m-%d')}\n")
-
-            else:
-                print("Jumlah tarikan melebihi total tabungan yang dimiliki. Tidak dapat melakukan penarikan.")
-
-        elif pilihan_awal == '3':
-            break
-        
-        else:
-            print("Pilihan tidak valid. Silakan pilih opsi yang tersedia.")
-
-    print("\n--- Program Selesai ---")
-    print("Total tabungan Anda sekarang (tabungan akhir):", tabungan_akhir)
-
-main()
+    except ValueError:
+        print("Kesalahan Input: Masukkan nilai yang valid untuk target dan jumlah hari!")
