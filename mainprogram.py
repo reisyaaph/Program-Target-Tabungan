@@ -1,5 +1,6 @@
 import csv
 from datetime import datetime, timedelta
+from bacadata import simpan_data_ke_csv, baca_data_dari_csv
 
 def simpan_data_ke_csv(tabungan_akhir, aktivitas):  
     nama_file = 'data_tabungan.csv'
