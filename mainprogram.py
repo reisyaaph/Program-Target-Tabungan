@@ -63,3 +63,49 @@ def menabung_harian(hari_ke):
     if hari_ke > jumlah_hari:
         menabung_aktif = False
         print("\nAnda telah menyelesaikan target menabung! Selamat!")
+        
+def menarik_tabungan():
+    global tabungan_awal
+
+    try:
+        print(f"\nSaldo Tabungan Saat Ini: Rp {format_rupiah(tabungan_awal)}")
+        jumlah = float(input("Masukkan jumlah yang ingin ditarik (Rp): ").replace('.', '').replace(',', '.'))
+        if jumlah > tabungan_awal:
+            print("Kesalahan: Jumlah tarikan melebihi saldo!")
+            return
+
+        tabungan_awal -= jumlah
+        simpan_data_ke_csv(tabungan_awal, f"Menarik tabungan sebesar Rp {format_rupiah(jumlah)}", hari_ke - 1)
+        print(f"Berhasil menarik Rp {format_rupiah(jumlah)}! Saldo saat ini: Rp {format_rupiah(tabungan_awal)}")
+    except ValueError:
+        print("Kesalahan Input: Masukkan jumlah yang valid!")
+
+def menu_utama():
+    global tabungan_awal
+    tabungan_awal = baca_data_dari_csv()
+    while True:
+        print("\n=== Aplikasi Tabungan Harian ===")
+        print(f"Saldo Tabungan: Rp {format_rupiah(tabungan_awal)}")
+        print("1. Lanjutkan Menabung")
+        print("2. Mulai Target Baru")
+        print("3. Menarik Tabungan")
+        print("4. Keluar")
+
+        pilihan = input("Pilih opsi: ")
+        if pilihan == "1":
+            if menabung_aktif:
+                menabung_harian(hari_ke)
+            else:
+                print("Mulai target baru dahulu.")
+        elif pilihan == "2":
+            mulai_menabung()
+        elif pilihan == "3":
+            menarik_tabungan()
+        elif pilihan == "4":
+            print("Terima kasih telah menggunakan aplikasi. Selamat menabung!")
+            break
+        else:
+            print("Pilihan tidak valid. Coba lagi.")
+
+if __name__ == "__main__":
+    menu_utama()
