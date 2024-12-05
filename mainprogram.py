@@ -1,9 +1,57 @@
-import csv
 from datetime import datetime, timedelta
+from tkinter import Tk, Frame, Label, Entry, Button, messagebox
 from bacadata import simpan_data_ke_csv, baca_data_dari_csv
+from akunpengguna import baca_data_akun, simpan_data_akun, daftar_akun, login_akun
 
 def format_rupiah(nilai):
     return f"{nilai:,.0f}"
+
+def login():
+    username = entry_username.get()
+    password = entry_password.get()
+
+    if login_akun(username, password):
+        messagebox.showinfo("Berhasil", "Login berhasil!")
+        frame_login.pack_forget()
+        frame_menu.pack()
+    else:
+        messagebox.showerror("Gagal", "Username atau password salah!")
+
+# Fungsi untuk registrasi akun baru
+def registrasi():
+    def simpan_akun():
+        username = entry_reg_username.get()
+        password = entry_reg_password.get()
+
+        if not username or not password:
+            messagebox.showerror("Kesalahan", "Username dan password tidak boleh kosong!")
+            return
+
+        data_akun = baca_data_akun()
+        if username in data_akun:
+            messagebox.showerror("Kesalahan", "Username sudah terdaftar!")
+        else:
+            daftar_akun(username, password)
+            messagebox.showinfo("Berhasil", "Registrasi berhasil! Silakan login.")
+            frame_registrasi.pack_forget()
+            frame_login.pack()
+
+    frame_login.pack_forget()
+    for widget in frame_registrasi.winfo_children():
+        widget.destroy()
+
+    frame_registrasi.pack()
+    Label(frame_registrasi, text="Registrasi Akun Baru", font=("Arial", 16)).pack(pady=10)
+    Label(frame_registrasi, text="Username:", font=("Arial", 12)).pack(pady=5)
+    entry_reg_username = Entry(frame_registrasi)
+    entry_reg_username.pack(pady=5)
+
+    Label(frame_registrasi, text="Password:", font=("Arial", 12)).pack(pady=5)
+    entry_reg_password = Entry(frame_registrasi, show="*")
+    entry_reg_password.pack(pady=5)
+
+    Button(frame_registrasi, text="Daftar", command=simpan_akun).pack(pady=10)
+    Button(frame_registrasi, text="Kembali", command=lambda: [frame_registrasi.pack_forget(), frame_login.pack()]).pack(pady=5)
 
 global tabungan_awal, hari_ke, jumlah_hari, target_tabungan, target_per_hari, tanggal_mulai, berhasil_menabung, menabung_setiap_hari, tabungan_awal_sebelumnya
 data_tabungan = baca_data_dari_csv()
