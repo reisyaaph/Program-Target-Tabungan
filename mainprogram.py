@@ -112,6 +112,17 @@ def registrasi():
     canvas_registrasi.create_window(949,559, window=kembali_button, width=100)
 
     frame_registrasi.pack()
+    Label(frame_registrasi, text="Registrasi Akun Baru", font=("Arial", 16)).pack(pady=10)
+    Label(frame_registrasi, text="Username:", font=("Arial", 12)).pack(pady=5)
+    entry_reg_username = Entry(frame_registrasi)
+    entry_reg_username.pack(pady=5)
+
+    Label(frame_registrasi, text="Password:", font=("Arial", 12)).pack(pady=5)
+    entry_reg_password = Entry(frame_registrasi, show="*")
+    entry_reg_password.pack(pady=5)
+
+    Button(frame_registrasi, text="Daftar", command=simpan_akun).pack(pady=10)
+    Button(frame_registrasi, text="Kembali", command=lambda: [frame_registrasi.pack_forget(), frame_login.pack()]).pack(pady=5)
 
 global tabungan_awal, hari_ke, jumlah_hari, target_tabungan, target_per_hari, tanggal_mulai, berhasil_menabung, menabung_setiap_hari, tabungan_awal_sebelumnya
 data_tabungan = baca_data_dari_csv()
@@ -127,65 +138,82 @@ menabung_setiap_hari = True
 def mulai_menabung():
     global jumlah_hari, target_tabungan, target_per_hari, hari_ke, tabungan_awal, menabung_aktif
     try:
-        target_tabungan = float(input("Masukkan target tabungan (Rp): ").replace('.', '').replace(',', '.'))
-        jumlah_hari = int(input("Masukkan jumlah hari: "))
-
+        target_tabungan = float(entry_target.get().replace('.', '').replace(',', '.'))
+        jumlah_hari = int(entry_hari.get())
         if target_tabungan <= 0 or jumlah_hari <= 0:
             raise ValueError
 
         target_per_hari = target_tabungan / jumlah_hari
         hari_ke = 1
-        menabung_aktif = True  
+        menabung_aktif = True  # Menandai bahwa proses menabung aktif
+
         print(f"\nTarget tabungan: Rp {format_rupiah(target_tabungan)}")
         print(f"Jumlah hari: {jumlah_hari}")
         print(f"Target tabungan per hari: Rp {format_rupiah(target_per_hari)}\n")
         
         menabung_harian(hari_ke)
-
     except ValueError:
-        print("Kesalahan Input: Masukkan nilai yang valid untuk target dan jumlah hari!")
+        messagebox.showerror("Kesalahan Input", "Masukkan nilai yang valid untuk target dan jumlah hari!")
 
 def menabung_harian(hari_ke):
     global tabungan_awal, target_per_hari, menabung_aktif
 
-    while hari_ke <= jumlah_hari and menabung_aktif:
-        print(f"\nHari ke-{hari_ke}/{jumlah_hari}")
-        print(f"Saldo Tabungan Saat Ini: Rp {format_rupiah(tabungan_awal)}")
-        print(f"Target Hari Ini: Rp {format_rupiah(target_per_hari)}")
-
-        pilihan = input("Pilih aksi: [1] Menabung [2] Lewati: ")
-        if pilihan == "1":
-            tabungan_awal += target_per_hari
-            simpan_data_ke_csv(tabungan_awal, f"Menabung hari ke-{hari_ke}", hari_ke)
-            print(f"Berhasil menabung! Saldo saat ini: Rp {format_rupiah(tabungan_awal)}")
-        elif pilihan == "2":
-            simpan_data_ke_csv(tabungan_awal, f"Tidak menabung hari ke-{hari_ke}", hari_ke)
-            print(f"Hari ke-{hari_ke} dilewati.")
-        else:
-            print("Pilihan tidak valid. Coba lagi.")
-            continue
-
+    def lanjutkan():
+        global tabungan_awal, hari_ke, menabung_aktif
+        tabungan_awal += target_per_hari
+        simpan_data_ke_csv(tabungan_awal, f"Menabung hari ke-{hari_ke}", hari_ke)
+        label_saldo.config(text=f"Saldo Tabungan: Rp {format_rupiah(tabungan_awal)}")
+        messagebox.showinfo("Berhasil", f"Anda telah menabung di hari ke-{hari_ke}!")
         hari_ke += 1
+        if hari_ke > jumlah_hari:
+            menabung_aktif = False
+            messagebox.showinfo("Selesai", "Anda telah menyelesaikan target menabung!")
+        frame_harian.pack_forget()
+        frame_menu.pack()
 
-    if hari_ke > jumlah_hari:
-        menabung_aktif = False
-        print("\nAnda telah menyelesaikan target menabung! Selamat!")
-        
+    def lewati():
+        global hari_ke, menabung_aktif
+        simpan_data_ke_csv(tabungan_awal, f"Tidak menabung hari ke-{hari_ke}", hari_ke)
+        messagebox.showinfo("Lewati", f"Anda melewati menabung di hari ke-{hari_ke}.")
+        hari_ke += 1
+        if hari_ke > jumlah_hari:
+            menabung_aktif = False
+            messagebox.showinfo("Selesai", "Anda telah menyelesaikan target menabung!")
+        frame_harian.pack_forget()
+        frame_menu.pack()
+
+    frame_menu.pack_forget()
+    for widget in frame_harian.winfo_children():
+        widget.destroy()
+
+    frame_harian.pack()
+    label_hari = Label(frame_harian, text=f"Hari ke-{hari_ke}/{jumlah_hari}", font=("Arial", 16))
+    label_hari.pack(pady=10)
+
+    label_saldo_harian = Label(frame_harian, text=f"Saldo Tabungan: Rp {format_rupiah(tabungan_awal)}", font=("Arial", 12))
+    label_saldo_harian.pack(pady=10)
+
+    Button(frame_harian, text="Menabung", command=lanjutkan).pack(pady=5)
+    Button(frame_harian, text="Tidak Menabung", command=lewati).pack(pady=5)
+
 def menarik_tabungan():
     global tabungan_awal
 
-    try:
-        print(f"\nSaldo Tabungan Saat Ini: Rp {format_rupiah(tabungan_awal)}")
-        jumlah = float(input("Masukkan jumlah yang ingin ditarik (Rp): ").replace('.', '').replace(',', '.'))
-        if jumlah > tabungan_awal:
-            print("Kesalahan: Jumlah tarikan melebihi saldo!")
-            return
-
-        tabungan_awal -= jumlah
-        simpan_data_ke_csv(tabungan_awal, f"Menarik tabungan sebesar Rp {format_rupiah(jumlah)}", hari_ke - 1)
-        print(f"Berhasil menarik Rp {format_rupiah(jumlah)}! Saldo saat ini: Rp {format_rupiah(tabungan_awal)}")
-    except ValueError:
-        print("Kesalahan Input: Masukkan jumlah yang valid!")
+    def tarik():
+        global tabungan_awal
+        try:
+            jumlah = float(entry_tarikan.get().replace('.', '').replace(',', '.'))
+            if jumlah > tabungan_awal:
+                messagebox.showerror("Kesalahan", "Jumlah tarikan melebihi saldo!")
+                return
+            tabungan_awal -= jumlah
+            simpan_data_ke_csv(tabungan_awal, f"Menarik tabungan sebesar Rp {format_rupiah(jumlah)}", hari_ke - 1)
+            label_saldo.config(text=f"Saldo Tabungan: Rp {format_rupiah(tabungan_awal)}")
+            messagebox.showinfo("Berhasil", f"Anda berhasil menarik Rp {format_rupiah(jumlah)}!")
+            frame_menarik.pack_forget()
+            frame_menabung.pack()
+        except ValueError:
+            messagebox.showerror("Kesalahan Input", "Masukkan jumlah yang valid!")
 
 def menu_utama():
     global tabungan_awal
@@ -215,21 +243,26 @@ def menu_utama():
             print("Pilihan tidak valid. Coba lagi.")
 
 def create_menu_frame():
-    global label_saldo  
+    global label_saldo  # Pastikan label_saldo adalah variabel global
 
+    # Buat Canvas untuk menampilkan gambar latar belakang
     canvas_menu = Canvas(frame_menu, width=1280, height=720)
     canvas_menu.pack(fill="both", expand=True)
 
-    bg_image = Image.open("background_menu.jpg")  
-    bg_image = bg_image.resize((1280, 720), Image.Resampling.LANCZOS)  
+    # Muat gambar latar belakang
+    bg_image = Image.open("background_menu.jpg")  # Ganti dengan nama file gambar Anda
+    bg_image = bg_image.resize((1280, 720), Image.Resampling.LANCZOS)  # Ganti dengan Image.Resampling.LANCZOS
     bg_photo = ImageTk.PhotoImage(bg_image)
-    canvas_menu.create_image(0, 0, image=bg_photo, anchor="nw")  
+    canvas_menu.create_image(0, 0, image=bg_photo, anchor="nw")  # Tambahkan gambar ke canvas
 
+    # Simpan referensi gambar agar tidak hilang saat garbage collection
     frame_menu.bg_photo = bg_photo
 
+    # Pastikan label_saldo dibuat di sini dan ditampilkan dengan format
     label_saldo = Label(frame_menu, text=f"Saldo Tabungan: Rp {format_rupiah(tabungan_awal)}", font=("Belanosima", 20), bg='white')
-    label_saldo.place(relx=0.5, rely=0.372, anchor="center")
+    label_saldo.place(relx=0.5, rely=0.372, anchor="center")  # Letakkan label di tengah-tengah
     
+    # Pastikan tombol muncul dengan jelas
     Button(frame_menu, text="1. Lanjutkan Menabung", command=lambda: menabung_harian(hari_ke) if menabung_aktif else messagebox.showinfo("Informasi", "Mulai target baru dahulu."), width=25, bg='white').place(relx=0.5, rely=0.52, anchor="center")
     Button(frame_menu, text="2. Mulai Baru", command=lambda: [frame_menu.pack_forget(), frame_menabung.pack()], width=25, bg='white').place(relx=0.5, rely=0.63, anchor="center")
     Button(frame_menu, text="3. Menarik Tabungan", command=menarik_tabungan, width=25, bg='white').place(relx=0.5, rely=0.74, anchor="center")
@@ -243,8 +276,7 @@ frame_menabung = Frame(root)
 frame_harian = Frame(root)
 frame_menarik = Frame(root)
 
+# Create Frames
 create_login_frame()
 create_menu_frame()
 create_menabung_frame()
-
-root.mainloop()
