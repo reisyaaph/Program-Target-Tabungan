@@ -1,4 +1,4 @@
-tabungan_akhir,aktivitas,hari_ke,tanggal_simpan
+username;tanggal;keterangan;hari;saldo
 20000.0,Menabung hari ke-1,1,2024-12-05 21:41:50
 40000.0,Menabung hari ke-2,2,2024-12-05 21:41:55
 40000.0,Tidak menabung hari ke-3,3,2024-12-05 21:41:58
@@ -12,3 +12,14 @@ dewa;2024-12-08 22:30:25;Menabung hari ke-1;1;50000.0
 dewa;2024-12-08 22:30:29;Menabung hari ke-2;2;100000.0
 rei;2024-12-08 22:47:11;Menabung hari ke-1;1;50000.0
 rei;2024-12-08 22:47:15;Tidak menabung hari ke-2;2;50000.0
+1;2024-12-26 14:56:27;Menabung hari ke-1;1;4000.0
+1;2024-12-26 14:56:31;Tidak menabung hari ke-2;2;4000.0
+1;2024-12-26 14:56:34;Tidak menabung hari ke-3;3;4000.0
+1;2024-12-26 14:56:43;Menabung hari ke-1;1;7000.0
+1;2024-12-26 14:56:47;Menabung hari ke-2;2;10000.0
+1;2024-12-26 14:56:54;Menarik tabungan sebesar Rp 10.000;2;0.0
+1;2024-12-26 14:56:58;Tidak menabung hari ke-1;1;0.0
+1;2024-12-26 14:57:03;Tidak menabung hari ke-2;2;0.0
+1;2024-12-26 14:57:14;Menabung hari ke-3;3;3000.0
+1;2024-12-26 14:57:21;Menabung hari ke-1;1;6000.0
+1;2024-12-26 14:57:25;Menabung hari ke-2;2;10000.0

@@ -281,3 +281,252 @@ def menabung_harian(hari_ke):
     canvas_harian.create_window(640, 430, window=tombol_lewati)  
 
     frame_harian.pack()
+
+def tambah_hari(sisa_target=0):
+    def perpanjang():
+        global jumlah_hari, target_tabungan, target_per_hari, hari_ke, tabungan_awal, menabung_aktif, jumlah_menabung, target_harian, total_tabungan, sisa_target
+        try:
+            tambahan_hari = int(entry_tambahan_hari.get())
+            if tambahan_hari <= 0:
+                raise ValueError
+
+            tambahan_target = sisa_target if sisa_target > 0 else float(entry_tambahan_target.get().replace('.', '').replace(',', '.'))
+            if tambahan_target <= 0:
+                raise ValueError
+
+            previous_total = total_tabungan
+
+            target_per_hari = round((tambahan_target / tambahan_hari) / 1000) * 1000
+
+            total_target_bulanan = target_per_hari * tambahan_hari
+
+            sisa_pembulanan = tambahan_target - total_target_bulanan
+
+            target_harian = [target_per_hari] * tambahan_hari
+
+            target_harian[0] += sisa_pembulanan
+
+            target_tabungan = sum(target_harian)
+
+            sisa_target = target_tabungan 
+
+            jumlah_hari = tambahan_hari
+
+            hari_ke = 1
+            jumlah_menabung = 0
+            menabung_aktif = True
+            total_tabungan = 0 
+
+            label_saldo.config(text=f"Saldo Tabungan: Rp {format_rupiah(tabungan_awal)}")
+
+            frame_tambah_hari.pack_forget()
+            frame_menu.pack()
+
+            menabung_harian(hari_ke)
+
+        except ValueError:
+            messagebox.showerror("Kesalahan Input", "Masukkan nilai yang valid untuk target dan jumlah hari tambahan!")
+
+    frame_menu.pack_forget()
+    for widget in frame_tambah_hari.winfo_children():
+        widget.destroy()
+
+    canvas_tambah_hari = Canvas(frame_tambah_hari, width=1280, height=720)
+    canvas_tambah_hari.pack(fill="both", expand=True)
+
+    bg_image = Image.open("background_tambah_hari.jpg")
+    bg_image = bg_image.resize((1280, 720), Image.Resampling.LANCZOS)
+    bg_photo = ImageTk.PhotoImage(bg_image)
+    canvas_tambah_hari.create_image(0, 0, image=bg_photo, anchor="nw")
+
+    frame_tambah_hari.bg_photo = bg_photo
+
+    canvas_tambah_hari.create_text(640, 50, text="Perpanjang Target Menabung", font=("Belanosima", 30), fill="black")
+
+    canvas_tambah_hari.create_text(640, 150, text="Tambahan Hari", font=("Belanosima", 20), fill="black")
+    entry_tambahan_hari = Entry(frame_tambah_hari, font=("Belanosima", 15), bg="#D9D9D9")
+    canvas_tambah_hari.create_window(640, 200, window=entry_tambahan_hari, width=300)
+
+    if sisa_target > 0:
+        tambahan_target_text = f"Sisa target: Rp {format_rupiah(sisa_target)}"
+    else:
+        tambahan_target_text = "Tambahan Target Tabungan"
+
+    canvas_tambah_hari.create_text(640, 250, text=tambahan_target_text, font=("Belanosima", 20), fill="black")
+    entry_tambahan_target = Entry(frame_tambah_hari, font=("Belanosima", 15), bg="#D9D9D9", state="normal")
+    if sisa_target > 0:
+        entry_tambahan_target.insert(0, format_rupiah(sisa_target))
+        entry_tambahan_target.config(state="readonly")
+    canvas_tambah_hari.create_window(640, 300, window=entry_tambahan_target, width=300)
+
+    perpanjang_button = Button(frame_tambah_hari, text="Perpanjang", command=perpanjang, bg="#D9D9D9")
+    canvas_tambah_hari.create_window(640, 400, window=perpanjang_button, width=150)
+
+    frame_tambah_hari.pack()
+
+def menarik_tabungan():
+    global tabungan_awal, entry_tarikan, label_saldo, entry_target 
+
+    def tarik():
+        global tabungan_awal, jumlah_terakhir_ditarik
+        try:
+            jumlah = float(entry_tarikan.get().replace('.', '').replace(',', '.'))
+            if jumlah > tabungan_awal:
+                messagebox.showerror("Kesalahan", "Jumlah tarikan melebihi saldo!")
+                return
+            tabungan_awal -= jumlah
+            jumlah_terakhir_ditarik = jumlah  
+            simpan_data_ke_csv(logged_in_user, tabungan_awal, f"Menarik tabungan sebesar Rp {format_rupiah(jumlah)}", hari_ke - 1)
+            label_saldo.config(text=f"Saldo Tabungan: Rp {format_rupiah(tabungan_awal)}")
+            messagebox.showinfo("Berhasil", f"Anda berhasil menarik Rp {format_rupiah(jumlah)}!")
+            frame_menarik.pack_forget()
+            frame_menabung.pack()
+            entry_target.delete(0, 'end')
+            entry_target.insert(0, format_rupiah(jumlah_terakhir_ditarik))
+        except ValueError:
+            messagebox.showerror("Kesalahan Input", "Masukkan jumlah yang valid!")
+
+    frame_menu.pack_forget()
+    for widget in frame_menarik.winfo_children():
+        widget.destroy()
+
+    canvas_menarik = Canvas(frame_menarik, width=1280, height=720)
+    canvas_menarik.pack(fill="both", expand=True)
+
+    bg_image = Image.open("background_menarik.jpg") 
+    bg_image = bg_image.resize((1280, 720), Image.Resampling.LANCZOS)  
+    bg_photo = ImageTk.PhotoImage(bg_image)
+    canvas_menarik.create_image(0, 0, image=bg_photo, anchor="nw")  
+    
+    frame_menarik.bg_photo = bg_photo
+
+    canvas_menarik.create_text(640, 50, text="Menarik Tabungan", font=("Belanosima", 30), fill="black")
+    canvas_menarik.create_text(640, 180, text=f"Saldo Tabungan: Rp {format_rupiah(tabungan_awal)}", font=("Belanosima", 25), fill="black")
+    canvas_menarik.create_text(640, 250, text="Masukkan Jumlah yang Akan Ditarik (Rp):", font=("Belanosima", 20), fill="black")
+
+    entry_tarikan = Entry(frame_menarik, bg='#D9D9D9', font=("Belanosima", 20))
+    canvas_menarik.create_window(640, 320, window=entry_tarikan, width=300)
+
+    tombol_tarikan = Button(frame_menarik, text="Tarik", command=tarik)
+    canvas_menarik.create_window(740, 540, window=tombol_tarikan, width=700)
+
+    tombol_kembali = Button(frame_menarik, text="Kembali", command=lambda: [frame_menarik.pack_forget(), frame_menu.pack()])
+    canvas_menarik.create_window(315, 540, window=tombol_kembali, width=100)
+
+    frame_menarik.pack()  
+
+def cek_riwayat():
+    global frame_riwayat, logged_in_user
+
+    if not os.path.exists("data_tabungan.csv"):
+        messagebox.showerror("Error", "File data_tabungan.csv tidak ditemukan!")
+        return
+
+    data = []
+    try:
+        with open("data_tabungan.csv", mode="r", encoding="utf-8") as file:
+            reader = csv.DictReader(file, delimiter=';') 
+            data = [row for row in reader if row.get("username") == logged_in_user]
+    except Exception as e:
+        messagebox.showerror("Error", f"Terjadi kesalahan saat membaca file: {e}")
+        return
+
+    if not data:
+        messagebox.showinfo("Info", "Tidak ada riwayat untuk pengguna ini.")
+        return
+
+    frame_menu.pack_forget()
+    for widget in frame_riwayat.winfo_children():
+        widget.destroy()
+
+    canvas_riwayat = Canvas(frame_riwayat, width=1280, height=720)
+    canvas_riwayat.pack(fill="both", expand=True)
+
+    bg_image = Image.open("background_riwayat.jpg")
+    bg_image = bg_image.resize((1280, 720), Image.Resampling.LANCZOS)
+    bg_photo = ImageTk.PhotoImage(bg_image)
+    canvas_riwayat.create_image(0, 0, image=bg_photo, anchor="nw")
+    frame_riwayat.bg_photo = bg_photo
+
+    canvas_riwayat.create_text(640, 50, text="Riwayat Tabungan", font=("Belanosima", 30), fill="black")
+
+    columns = ("tanggal", "keterangan", "hari", "saldo")
+    tree = ttk.Treeview(frame_riwayat, columns=columns, show="headings", height=20)
+
+    tree.heading("tanggal", text="Tanggal")
+    tree.heading("keterangan", text="Keterangan")
+    tree.heading("hari", text="Hari")
+    tree.heading("saldo", text="Saldo")
+    for col in columns:
+        tree.column(col, width=200, anchor="center")
+
+    for row in data:
+        tree.insert("", "end", values=(row["tanggal"], row["keterangan"], row["hari"], row["saldo"]))
+
+    tree.place(relx=0.5, rely=0.5, anchor="center")
+
+    Button(
+        frame_riwayat,
+        text="Kembali",
+        command=lambda: [frame_riwayat.pack_forget(), frame_menu.pack()], font=("Belanosima", 11),
+        width=20
+    ).place(relx=0.5, rely=0.92, anchor="center")
+
+    frame_riwayat.pack()
+
+def create_menu_frame():
+    global label_saldo
+
+    canvas_menu = Canvas(frame_menu, width=1280, height=720)
+    canvas_menu.pack(fill="both", expand=True)
+
+    bg_image = Image.open("background_menu.jpg")
+    bg_image = bg_image.resize((1280, 720), Image.Resampling.LANCZOS)
+    bg_photo = ImageTk.PhotoImage(bg_image)
+    canvas_menu.create_image(0, 0, image=bg_photo, anchor="nw")
+
+    frame_menu.bg_photo = bg_photo
+
+    label_saldo = Label(frame_menu, text=f"Saldo Tabungan: Rp {format_rupiah(tabungan_awal)}", font=("Belanosima", 30), bg='white')
+    label_saldo.place(relx=0.5, rely=0.150, anchor="center")
+    
+    Button(frame_menu, text="1. Lanjutkan Menabung", font=("Belanosima", 12), command=lambda: menabung_harian(hari_ke) if menabung_aktif else messagebox.showinfo("Informasi", "Mulai target baru dahulu."), width=25, bg='white').place(relx=0.5, rely=0.32, anchor="center")
+    Button(frame_menu, text="2. Mulai Baru", font=("Belanosima", 12), command=lambda: [frame_menu.pack_forget(), frame_menabung.pack()], width=25, bg='white').place(relx=0.5, rely=0.41, anchor="center")
+    Button(frame_menu, text="3. Menarik Tabungan", font=("Belanosima", 12), command=menarik_tabungan, width=25, bg='white').place(relx=0.5, rely=0.50, anchor="center")
+    Button(frame_menu, text="4. Cek Riwayat", font=("Belanosima", 12), command=cek_riwayat, width=25, bg='white').place(relx=0.5, rely=0.59, anchor="center")
+    Button(frame_menu, text="5. Keluar", font=("Belanosima", 12), command=lambda: [frame_menu.pack_forget(), frame_login.pack(), entry_username.delete(0, 'end'), entry_password.delete(0, 'end')], width=25, bg='white').place(relx=0.5, rely=0.68, anchor="center")
+
+root = Tk()
+root.title("Aplikasi Tabungan Harian")
+root.geometry("1280x720")
+
+frame_login = Frame(root)
+frame_menu = Frame(root)
+frame_registrasi = Frame(root)
+frame_menabung = Frame(root)
+frame_harian = Frame(root)
+frame_menarik = Frame(root)
+frame_tambah_hari = Frame(root)
+frame_riwayat = Frame(root)
+
+logged_in_user = None
+tabungan_awal = baca_data_tabungan(logged_in_user)  
+jumlah_hari = 0
+target_tabungan = 0
+target_per_hari = 0
+hari_ke = 1
+menabung_aktif = False
+tabungan_awal = 0
+jumlah_terakhir_ditarik = 0
+label_saldo = None
+entry_target = None
+entry_hari = None 
+total_tabungan = 0
+sisa_target = 0
+
+
+create_login_frame()
+create_menu_frame()
+create_menabung_frame()
+
+root.mainloop()
