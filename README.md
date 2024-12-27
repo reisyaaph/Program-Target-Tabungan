@@ -28,11 +28,11 @@ Program "Aplikasi Target Tabungan" adalah aplikasi berbasis Python yang membantu
 ![Flowchart Program Target Tabungan-Menarik Tabungan drawio](https://github.com/user-attachments/assets/3d26d1bb-1f97-45c4-9a36-1be59a09e20a)
 
 # Diagram Alir Final
-![Flowchart Program Target Tabungan-Main Program drawio](https://github.com/user-attachments/assets/7d119ab8-5dc4-44d9-87fe-9a62df1e7d69)
+![Flowchart Program Target Tabungan-Main Program drawio](https://github.com/user-attachments/assets/99f7aace-affe-4f23-ab68-8ae7ea12b364)
 
 ![Flowchart Program Target Tabungan-Login drawio](https://github.com/user-attachments/assets/87ee67cd-e3f1-4a84-9fe4-95ee9424fcc2)
 
-![Flowchart Program Target Tabungan-Lanjutkan Menabung drawio](https://github.com/user-attachments/assets/bde50485-97db-4147-ab65-a72d32aa2267)
+![Flowchart Program Target Tabungan-Lanjutkan Menabung drawio](https://github.com/user-attachments/assets/144f4a5c-17d1-408a-b39d-da1f9eed45d7)
 
 ![Flowchart Program Target Tabungan-Mulai Baru drawio](https://github.com/user-attachments/assets/5a2c8c38-3000-4484-8379-2f77db1b3aca)
 
